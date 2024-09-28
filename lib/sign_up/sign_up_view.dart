@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:peakflow/home/home.dart';
-import 'package:peakflow/login/login_view.dart';
 import 'package:flutter/material.dart';
-import 'package:peakflow/services/database.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:peakflow/home/home.dart';
+import 'package:peakflow/login/login_view.dart';
+import 'package:peakflow/services/database.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -15,13 +16,47 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  String email = "", password = "", name = "", avatarUrl = "";
-  TextEditingController namecontroller = TextEditingController();
-  TextEditingController mailcontroller = TextEditingController();
-  TextEditingController passwordcontroller = TextEditingController();
+  String email = "",
+      password = "",
+      name = "",
+      surname = "",
+      location = "",
+      avatarUrl = "";
+  List<String> selectedInterests = [];
+  TextEditingController nameController = TextEditingController();
+  TextEditingController surnameController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   File? _image;
 
   DatabaseMethods databaseMethods = DatabaseMethods();
+
+  final List<String> _interests = [
+    "Running",
+    "Cycling",
+    "Swimming",
+    "Tennis",
+    "Gym Workouts",
+    "Yoga",
+    "Rock Climbing",
+    "Hiking",
+    "Martial Arts",
+    "Dance Classes",
+    "Pilates",
+    "Group Fitness Classes",
+    "Rowing",
+    "Skateboarding",
+    "Surfing",
+    "Triathlon Training",
+    "Mountain Biking",
+    "CrossFit",
+    "Outdoor Boot Camps",
+    "Adventure Racing"
+  ];
+
+  double _minAge = 18;
+  double _maxAge = 60;
 
   Future<void> pickImage() async {
     final pickedFile =
@@ -50,25 +85,38 @@ class _SignUpState extends State<SignUp> {
     if (password.isNotEmpty &&
         email.isNotEmpty &&
         name.isNotEmpty &&
-        _image != null) {
+        surname.isNotEmpty &&
+        location.isNotEmpty &&
+        selectedInterests.isNotEmpty) {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
 
         String userId = userCredential.user!.uid;
 
-        // Upload avatar and get the download URL
-        avatarUrl = await uploadImage(_image!);
+        // Upload avatar and get the download URL if an image was picked
+        if (_image != null) {
+          avatarUrl = await uploadImage(_image!);
+        }
 
+        // Creating a map of user data
         Map<String, dynamic> userInfoMap = {
           "name": name,
+          "surname": surname,
+          "location": location,
           "email": email,
           "password": password,
           "userId": userId,
-          "avatarUrl": avatarUrl, // Add avatar URL
+          "avatarUrl": avatarUrl, // Optional avatar URL
+          "interests": selectedInterests,
+          "ageRange": {
+            "min": _minAge,
+            "max": _maxAge,
+          },
           "createdAt": DateTime.now().millisecondsSinceEpoch,
         };
 
+        // Adding user data to the database
         await databaseMethods.addUser(userId, userInfoMap);
 
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -78,7 +126,7 @@ class _SignUpState extends State<SignUp> {
               style: TextStyle(fontSize: 20.0),
             )));
 
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const Home()));
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
@@ -105,7 +153,7 @@ class _SignUpState extends State<SignUp> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.only(left: 30.0, right: 30.0),
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           decoration: const BoxDecoration(
@@ -115,185 +163,254 @@ class _SignUpState extends State<SignUp> {
               Color.fromARGB(255, 227, 138, 37),
             ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
           ),
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: pickImage,
-                child: Container(
-                  margin: const EdgeInsetsDirectional.only(top: 80, bottom: 30),
-                  width: 150.0,
-                  height: 150.0,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: pickImage,
+                  child: Container(
+                    margin:
+                        const EdgeInsetsDirectional.only(top: 80, bottom: 30),
+                    width: 150.0,
+                    height: 150.0,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                    child: ClipOval(
+                      child: _image != null
+                          ? Image.file(
+                              _image!,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              "images/add_avatar.png",
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
+                ),
+                TextField(
+                  cursorColor: const Color.fromARGB(255, 227, 138, 37),
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    hintText: "Name",
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white, width: 1.5),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Color.fromARGB(255, 227, 138, 37), width: 1.5),
+                    ),
+                  ),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 30.0),
+                TextField(
+                  cursorColor: const Color.fromARGB(255, 227, 138, 37),
+                  controller: surnameController,
+                  decoration: const InputDecoration(
+                    hintText: "Surname",
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white, width: 1.5),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Color.fromARGB(255, 227, 138, 37), width: 1.5),
+                    ),
+                  ),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 30.0),
+                TextField(
+                  cursorColor: const Color.fromARGB(255, 227, 138, 37),
+                  controller: locationController,
+                  decoration: const InputDecoration(
+                    hintText: "Location",
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white, width: 1.5),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Color.fromARGB(255, 227, 138, 37), width: 1.5),
+                    ),
+                  ),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 30.0),
+                // Widget do wielokrotnego wyboru zainteresowań
+                MultiSelectDialogField(
+                  items: _interests
+                      .map((interest) => MultiSelectItem(interest, interest))
+                      .toList(),
+                  title: const Text("Select Interests"),
+                  selectedColor: Colors.orange,
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  buttonIcon: const Icon(
+                    Icons.arrow_circle_down_sharp,
                     color: Colors.white,
                   ),
-                  child: ClipOval(
-                    child: _image != null
-                        ? Image.file(
-                            _image!,
-                            fit: BoxFit.cover,
-                          )
-                        : Image.asset(
-                            "images/add_avatar.png",
-                            fit: BoxFit.cover,
-                          ),
+                  buttonText: const Text(
+                    "Choose Interests",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
                   ),
-                ),
-              ),
-              TextField(
-                cursorColor: const Color.fromARGB(255, 227, 138, 37),
-                controller: namecontroller,
-                decoration: const InputDecoration(
-                  hintText: "Name",
-                  hintStyle: TextStyle(
-                    color: Color.fromARGB(255, 255, 255, 255),
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.white,
-                      width: 1.5,
-                    ),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color.fromARGB(255, 227, 138, 37),
-                      width: 1.5,
-                    ),
-                  ),
-                ),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 30.0),
-              TextField(
-                cursorColor: const Color.fromARGB(255, 227, 138, 37),
-                controller: mailcontroller,
-                decoration: const InputDecoration(
-                  hintText: "Email",
-                  hintStyle: TextStyle(
-                    color: Color.fromARGB(255, 255, 255, 255),
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.white,
-                      width: 1.5,
-                    ),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color.fromARGB(255, 227, 138, 37),
-                      width: 1.5,
-                    ),
-                  ),
-                ),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 30.0),
-              TextField(
-                cursorColor: const Color.fromARGB(255, 227, 138, 37),
-                controller: passwordcontroller,
-                decoration: const InputDecoration(
-                  hintText: "Password",
-                  hintStyle: TextStyle(
-                    color: Color.fromARGB(255, 255, 255, 255),
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.white,
-                      width: 1.5,
-                    ),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color.fromARGB(255, 227, 138, 37),
-                      width: 1.5,
-                    ),
-                  ),
-                ),
-                obscureText: true,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: () {
-                  if (namecontroller.text.isNotEmpty &&
-                      mailcontroller.text.isNotEmpty &&
-                      passwordcontroller.text.isNotEmpty &&
-                      _image != null) {
+                  onConfirm: (values) {
                     setState(() {
-                      email = mailcontroller.text;
-                      name = namecontroller.text;
-                      password = passwordcontroller.text;
+                      selectedInterests = List<String>.from(values);
                     });
-                    registration();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 30.0, vertical: 20.0),
-                  backgroundColor:
-                      const Color.fromARGB(255, 184, 70, 4), // Button color
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(60),
-                  ),
-                  elevation: 5.0,
+                  },
                 ),
-                child: const Text(
-                  "Sign up",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(height: 30.0),
+                TextField(
+                  cursorColor: const Color.fromARGB(255, 227, 138, 37),
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    hintText: "Email",
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white, width: 1.5),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Color.fromARGB(255, 227, 138, 37), width: 1.5),
+                    ),
                   ),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                  onChanged: (val) {
+                    setState(() {
+                      email = val;
+                    });
+                  },
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 40),
-                child: Row(
+                const SizedBox(height: 30.0),
+                TextField(
+                  cursorColor: const Color.fromARGB(255, 227, 138, 37),
+                  controller: passwordController,
+                  decoration: const InputDecoration(
+                    hintText: "Password",
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white, width: 1.5),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Color.fromARGB(255, 227, 138, 37), width: 1.5),
+                    ),
+                  ),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                  obscureText: true,
+                  onChanged: (val) {
+                    setState(() {
+                      password = val;
+                    });
+                  },
+                ),
+                const SizedBox(height: 30.0),
+
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Already have an account? ",
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w500,
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30.0, vertical: 20.0),
+                        backgroundColor: const Color.fromARGB(
+                            255, 184, 70, 4), // Button color
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(60),
+                        ),
+                        elevation: 5.0,
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SignIn()));
+                      onPressed: () {
+                        setState(() {
+                          name = nameController.text;
+                          surname = surnameController.text;
+                          location = locationController.text;
+                          email = emailController.text;
+                          password = passwordController.text;
+                        });
+                        registration();
                       },
                       child: const Text(
-                        "Sign In",
+                        "Sign Up",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 20.0,
+                          fontSize: 25.0,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ],
                 ),
-              )
-            ],
+                const SizedBox(height: 20.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 40),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Already have an account? ",
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SignIn()));
+                        },
+                        child: const Text(
+                          "Sign In",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
