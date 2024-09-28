@@ -5,7 +5,8 @@ class AuthMethods {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  getCurrentUser() async {
-    return await auth.currentUser;
+  String getCurrentUserId() {
+    User? user = auth.currentUser;
+    return user?.uid ?? '';
   }
 }

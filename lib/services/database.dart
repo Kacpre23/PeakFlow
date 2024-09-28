@@ -7,4 +7,12 @@ class DatabaseMethods {
         .doc(userId)
         .set(userInfoMap);
   }
+
+  Future<void> updateUser(
+      String userId, Map<String, dynamic> userInfoMap) async {
+    await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(userId)
+        .update(userInfoMap);
+  }
 }

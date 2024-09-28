@@ -21,13 +21,15 @@ class _SignUpState extends State<SignUp> {
       name = "",
       surname = "",
       location = "",
-      avatarUrl = "";
+      avatarUrl = "",
+      age = "";
   List<String> selectedInterests = [];
   TextEditingController nameController = TextEditingController();
   TextEditingController surnameController = TextEditingController();
   TextEditingController locationController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
   File? _image;
 
   DatabaseMethods databaseMethods = DatabaseMethods();
@@ -87,6 +89,7 @@ class _SignUpState extends State<SignUp> {
         name.isNotEmpty &&
         surname.isNotEmpty &&
         location.isNotEmpty &&
+        age.isNotEmpty &&
         selectedInterests.isNotEmpty) {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
@@ -113,18 +116,12 @@ class _SignUpState extends State<SignUp> {
             "min": _minAge,
             "max": _maxAge,
           },
+          "age": age,
           "createdAt": DateTime.now().millisecondsSinceEpoch,
         };
 
         // Adding user data to the database
         await databaseMethods.addUser(userId, userInfoMap);
-
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            backgroundColor: Colors.green,
-            content: Text(
-              "Registered Successfully",
-              style: TextStyle(fontSize: 20.0),
-            )));
 
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const Home()));
@@ -217,6 +214,28 @@ class _SignUpState extends State<SignUp> {
                   controller: surnameController,
                   decoration: const InputDecoration(
                     hintText: "Surname",
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white, width: 1.5),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Color.fromARGB(255, 227, 138, 37), width: 1.5),
+                    ),
+                  ),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 30.0),
+                TextField(
+                  cursorColor: const Color.fromARGB(255, 227, 138, 37),
+                  controller: ageController,
+                  decoration: const InputDecoration(
+                    hintText: "Age",
                     hintStyle: TextStyle(
                       color: Colors.white,
                       fontSize: 20.0,
@@ -340,6 +359,47 @@ class _SignUpState extends State<SignUp> {
                   },
                 ),
                 const SizedBox(height: 30.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Select age range of people you meet:",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    RangeSlider(
+                      values: RangeValues(_minAge, _maxAge),
+                      min: 16, // Ustaw min na 0
+                      max: 100,
+                      divisions: 100, // Zwiększ liczbę podziałów
+                      activeColor: Colors.orange,
+                      inactiveColor: Colors.white,
+                      labels: RangeLabels(
+                        _minAge.round().toString(),
+                        _maxAge.round().toString(),
+                      ),
+                      onChanged: (RangeValues values) {
+                        setState(() {
+                          _minAge = values.start;
+                          _maxAge = values.end;
+                        });
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0, bottom: 20),
+                      child: Text(
+                        "Age Range: ${_minAge.round()} - ${_maxAge.round()}",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -362,6 +422,7 @@ class _SignUpState extends State<SignUp> {
                           location = locationController.text;
                           email = emailController.text;
                           password = passwordController.text;
+                          age = ageController.text;
                         });
                         registration();
                       },
