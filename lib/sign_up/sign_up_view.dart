@@ -15,35 +15,58 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  String email = "", password = "", name = "";
+  String email = "", password = "", name = "", avatarUrl = "";
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mailcontroller = TextEditingController();
   TextEditingController passwordcontroller = TextEditingController();
   File? _image;
-  final ImagePicker _picker = ImagePicker();
 
   DatabaseMethods databaseMethods = DatabaseMethods();
 
+  Future<void> pickImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<String> uploadImage(File image) async {
+    try {
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child("avatars/${DateTime.now().toString()}.png");
+      await ref.putFile(image);
+      return await ref.getDownloadURL();
+    } catch (e) {
+      print(e);
+      return "";
+    }
+  }
+
   registration() async {
-    if (password.isNotEmpty && email.isNotEmpty && name.isNotEmpty) {
+    if (password.isNotEmpty &&
+        email.isNotEmpty &&
+        name.isNotEmpty &&
+        _image != null) {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
 
         String userId = userCredential.user!.uid;
-        String? imageUrl;
 
-        if (_image != null) {
-          imageUrl = await _uploadImageToFirebase(userId);
-        }
+        // Upload avatar and get the download URL
+        avatarUrl = await uploadImage(_image!);
 
         Map<String, dynamic> userInfoMap = {
           "name": name,
           "email": email,
           "password": password,
           "userId": userId,
+          "avatarUrl": avatarUrl, // Add avatar URL
           "createdAt": DateTime.now().millisecondsSinceEpoch,
-          "imageUrl": imageUrl ?? '',
         };
 
         await databaseMethods.addUser(userId, userInfoMap);
@@ -77,21 +100,6 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  Future<String?> _uploadImageToFirebase(String userId) async {
-    try {
-      Reference storageReference = FirebaseStorage.instance.ref().child(
-          "profile_images/$userId/${DateTime.now().millisecondsSinceEpoch}.jpg");
-
-      await storageReference.putFile(_image!);
-
-      String downloadUrl = await storageReference.getDownloadURL();
-      return downloadUrl;
-    } catch (e) {
-      print("Error uploading image: $e");
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,14 +117,26 @@ class _SignUpState extends State<SignUp> {
           ),
           child: Column(
             children: [
-              Container(
-                margin: const EdgeInsetsDirectional.only(top: 60, bottom: 30),
-                width: 150.0,
-                height: 150.0,
-                child: ClipOval(
-                  child: Image.asset(
-                    "images/peakflow_image.jpg",
-                    fit: BoxFit.cover,
+              GestureDetector(
+                onTap: pickImage,
+                child: Container(
+                  margin: const EdgeInsetsDirectional.only(top: 80, bottom: 30),
+                  width: 150.0,
+                  height: 150.0,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                  ),
+                  child: ClipOval(
+                    child: _image != null
+                        ? Image.file(
+                            _image!,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            "images/add_avatar.png",
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
               ),
@@ -212,7 +232,8 @@ class _SignUpState extends State<SignUp> {
                 onPressed: () {
                   if (namecontroller.text.isNotEmpty &&
                       mailcontroller.text.isNotEmpty &&
-                      passwordcontroller.text.isNotEmpty) {
+                      passwordcontroller.text.isNotEmpty &&
+                      _image != null) {
                     setState(() {
                       email = mailcontroller.text;
                       name = namecontroller.text;
