@@ -5,7 +5,13 @@ import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          appId: '1:770970331880:android:4b05ff9969e106bca5b75d',
+          apiKey: 'AIzaSyAqN23SLJWEmthpXzPm1LQnY75ohp671Cw',
+          projectId: 'peakflow-dc8eb',
+          storageBucket: 'peakflow-dc8eb.appspot.com',
+          messagingSenderId: '770970331880'));
   runApp(const MyApp());
 }
 
@@ -21,6 +27,6 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: SignIn());
+        home: const SignIn());
   }
 }
