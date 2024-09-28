@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:peakflow/login/signin.dart';
-import 'package:peakflow/sign_up/signup.dart';
+import 'package:peakflow/login/login_view.dart';
+import 'package:peakflow/sign_up/sign_up_view.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
