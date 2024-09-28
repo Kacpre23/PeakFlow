@@ -46,7 +46,8 @@ class _NavigationExampleState extends State<NavigationExample> {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Badge(child: Icon(Icons.groups_2)),
+            selectedIcon: Icon(Icons.groups_2_rounded),
+            icon: Icon(Icons.groups_2_outlined),
             label: 'FindFriends',
           ),
           NavigationDestination(
@@ -59,6 +60,11 @@ class _NavigationExampleState extends State<NavigationExample> {
               child: Icon(Icons.messenger_sharp),
             ),
             label: 'Messages',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.account_circle_rounded),
+            icon: Icon(Icons.account_circle_outlined),
+            label: 'Profile',
           ),
         ],
       ),
@@ -149,6 +155,19 @@ class _NavigationExampleState extends State<NavigationExample> {
               ),
             );
           },
+        ),
+        /// Home page
+        Card(
+          shadowColor: Colors.transparent,
+          margin: const EdgeInsets.all(8.0),
+          child: SizedBox.expand(
+            child: Center(
+              child: Text(
+                'Twoja Noga ssie pieroga',
+                style: theme.textTheme.titleLarge,
+              ),
+            ),
+          ),
         ),
       ][currentPageIndex],
     );
