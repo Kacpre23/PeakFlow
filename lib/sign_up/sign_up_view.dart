@@ -123,13 +123,6 @@ class _SignUpState extends State<SignUp> {
         // Adding user data to the database
         await databaseMethods.addUser(userId, userInfoMap);
 
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            backgroundColor: Colors.green,
-            content: Text(
-              "Registered Successfully",
-              style: TextStyle(fontSize: 20.0),
-            )));
-
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const Home()));
       } on FirebaseAuthException catch (e) {
