@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
-import 'package:peakflow/MainPage/postWidget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:peakflow/MainPage/postWidget.dart'; // Import Firestore
 
 class MainPage extends StatefulWidget {
   final String userId;
@@ -13,8 +13,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-
   @override
   void initState() {
     super.initState();
@@ -43,25 +41,20 @@ class _MainPageState extends State<MainPage> {
     final ThemeData theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          'Welcome back ${widget.name}!',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+        appBar: AppBar(
+          title: Text('Welcome back ${widget.name}!',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              )),
         ),
-      ),
-      body: CustomScrollView(
-        slivers: [
+        body: CustomScrollView(slivers: [
           SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return PostWidget();
-              },
-              childCount: 10, // Define how many children you want to display
-            ),
-          ),
-        ],
-      ),
-    );
+              delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return const PostWidget();
+            },
+            childCount: 10, // Define how many children
+          ))
+        ]));
   }
 }
