@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:peakflow/personal_details/personal_details_view.dart';
 import 'package:peakflow/services/auth.dart';
+import 'package:peakflow/MainPage/mainpage.dart';
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -75,19 +77,7 @@ class _NavigationExampleState extends State<NavigationExample> {
       ),
       body: <Widget>[
         /// Home page
-        Card(
-          shadowColor: Colors.transparent,
-          margin: const EdgeInsets.all(8.0),
-          child: SizedBox.expand(
-            child: Center(
-              child: Text(
-                'Home page',
-                style: theme.textTheme.titleLarge,
-              ),
-            ),
-          ),
-        ),
-
+        MainPage(userId: userId),
         /// FindFriends page
         const Padding(
           padding: EdgeInsets.all(8.0),
