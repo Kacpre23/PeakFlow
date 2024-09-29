@@ -136,7 +136,7 @@ class _SignInState extends State<SignIn> {
                             controller: mailcontroller, hintText: "Email"),
                         CustomTextField(
                           controller: passwordcontroller,
-                          hintText: "Password",
+                          hintText: "Password", obscureText: true
                         ),
                         const Spacer(),
                         loginButton(),
