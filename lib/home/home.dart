@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:peakflow/join_group/join_group_view.dart';
 import 'package:peakflow/personal_details/personal_details_view.dart';
 import 'package:peakflow/services/auth.dart';
 import 'package:peakflow/mainPage/home_page_view.dart';
 import 'package:peakflow/findFriends/findfriends.dart';
+import 'package:peakflow/tinder/tinder_view.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -60,7 +62,7 @@ class _NavigationExampleState extends State<NavigationExample> {
           ),
           NavigationDestination(
             icon: Badge(child: Icon(Icons.notifications_sharp)),
-            label: 'Notifications',
+            label: 'Groups',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.account_circle_rounded),
@@ -74,30 +76,11 @@ class _NavigationExampleState extends State<NavigationExample> {
         MainPage(userId: userId),
 
         /// FindFriends page
-        FindFriends(userId: userId),
+        // FindFriends(userId: userId),
+        CardSwiperView(),
 
         /// Notifications page
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              Card(
-                child: ListTile(
-                  leading: Icon(Icons.notifications_sharp),
-                  title: Text('Notification 1'),
-                  subtitle: Text('This is a notification'),
-                ),
-              ),
-              Card(
-                child: ListTile(
-                  leading: Icon(Icons.notifications_sharp),
-                  title: Text('Notification 2'),
-                  subtitle: Text('This is a notification'),
-                ),
-              ),
-            ],
-          ),
-        ),
+        ActivityCardView(),
 
         /// Profile page (Personal Details)
         PersonalDetails(userId: userId),

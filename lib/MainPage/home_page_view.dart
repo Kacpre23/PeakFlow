@@ -81,7 +81,7 @@ class _MainPageState extends State<MainPage> {
           'Welcome back ${widget.name}!',
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Color.fromARGB(200, 227, 138, 37),
+        backgroundColor: const Color.fromARGB(200, 227, 138, 37),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -101,15 +101,9 @@ class _MainPageState extends State<MainPage> {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   var post = posts[index];
-                  return Column(
+                  return const Column(
                     children: [
-                      PostWidget(
-                        imagePath: post['image']!,
-                        username: post['username']!,
-                        location: post['location']!,
-                        description: post['description']!,
-                        date: post['date']!,
-                      ),
+                      PostWidget(),
                       SizedBox(height: 20), // Odstęp między postami
                     ],
                   );
