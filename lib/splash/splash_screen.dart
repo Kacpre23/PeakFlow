@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   // Function to delay the splash screen for 3 seconds and navigate to SignIn
   _navigateToSignIn() async {
-    await Future.delayed(Duration(seconds: 3), () {}); // Delay for 3 seconds
+    await Future.delayed(Duration(seconds: 5), () {}); // Delay for 3 seconds
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => SignIn()), // Navigate to SignIn screen
@@ -43,14 +43,23 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Background color for splash screen
+      
+      // backgroundColor: const Color.fromARGB(255, 255, 255, 255), // Background color for splash screen
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+              children: [Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(
+                      gradient: LinearGradient(colors: [
+                    Color.fromARGB(255, 255, 219, 164),
+                    Color.fromARGB(255, 220, 158, 88),
+                    Color.fromARGB(255, 227, 138, 37),
+                  ]
+                      ))), 
             // Display the GIF here
             Image.asset(
-              'images/meow-cats.gif', // Ensure the path to your local GIF is correct
+              'images/cat_walking.gif', // Ensure the path to your local GIF is correct
               width: 150, // Adjust width as needed
               height: 150, // Adjust height as needed
             ),
@@ -60,16 +69,16 @@ class _SplashScreenState extends State<SplashScreen> {
             //   size: 100.0,
             //   color: const Color.fromARGB(255, 212, 165, 114), // Change color to match your theme
             // ),
-            SizedBox(height: 20),
-            Text(
-              'Welcome to PeakFlow!',
-              style: TextStyle(
-                fontSize: 28,
-                color: const Color.fromARGB(255, 253, 130, 23), // Match the text color to your app theme
-                fontWeight: FontWeight.bold, // Make the text bold
+            // SizedBox(height: 20),
+            // Text(
+            //   'Welcome to PeakFlow!',
+            //   style: TextStyle(
+            //     fontSize: 28,
+            //     color: const Color.fromARGB(255, 253, 130, 23), // Match the text color to your app theme
+            //     fontWeight: FontWeight.bold, // Make the text bold
 
-              ),
-            ),
+            //   ),
+            // ),
           ],
         ),
       ),

@@ -36,6 +36,7 @@ dependencies:
   random_string: 
   google_sign_in: 
   the_apple_sign_in: ^1.1.1
+  carousel_slider: ^4.2.1
 
 
   # The following adds the Cupertino Icons font to your application.
