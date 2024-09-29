@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:peakflow/home/home.dart';
 import 'package:peakflow/sign_up/sign_up_view.dart';
-import 'package:peakflow/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:peakflow/widgets/custom_text_field_widget.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -42,6 +42,70 @@ class _SignInState extends State<SignIn> {
     }
   }
 
+  Widget loginButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (mailcontroller.text.isNotEmpty &&
+            passwordcontroller.text.isNotEmpty) {
+          setState(() {
+            email = mailcontroller.text;
+            password = passwordcontroller.text;
+          });
+        }
+        userlogin();
+      },
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 20.0),
+        backgroundColor: const Color.fromARGB(255, 184, 70, 4), // Button color
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(60), // Rounded corners
+        ),
+        elevation: 5.0, // Button elevation
+      ),
+      child: const Text(
+        "Log in",
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 25.0,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget dontHaveAccount() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            "Don't have an account? ",
+            style: TextStyle(
+                color: Color.fromARGB(255, 255, 255, 255),
+                fontSize: 18.0,
+                fontWeight: FontWeight.w500),
+          ),
+          GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const SignUp()));
+              },
+              child: const Padding(
+                padding: EdgeInsetsDirectional.symmetric(horizontal: 10),
+                child: Text(
+                  "Sign Up",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold),
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,130 +132,16 @@ class _SignInState extends State<SignIn> {
                         const SizedBox(
                           height: 30.0,
                         ),
-                        TextField(
-                          cursorColor: const Color.fromARGB(255, 227, 138, 37),
-                          controller: mailcontroller,
-                          decoration: const InputDecoration(
-                            hintText: "Email",
-                            hintStyle: TextStyle(
-                                color: Color.fromARGB(255, 255, 255, 255),
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.white,
-                                  width:
-                                      1.5), // The default color when not focused
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(255, 227, 138, 37),
-                                width: 1.5,
-                              ), // Highlight color when focused
-                            ),
-                          ),
-                          style: const TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 30.0,
-                        ),
-                        TextField(
-                          cursorColor: const Color.fromARGB(
-                              255, 227, 138, 37), // Kolor kursora
+                        CustomTextField(
+                            controller: mailcontroller, hintText: "Email"),
+                        CustomTextField(
                           controller: passwordcontroller,
-                          decoration: const InputDecoration(
-                            hintText: "Password",
-                            hintStyle: TextStyle(
-                                color: Color.fromARGB(255, 255, 255, 255),
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.white,
-                                  width:
-                                      1.5), // The default color when not focused
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(255, 227, 138, 37),
-                                width: 1.5,
-                              ), // Highlight color when focused
-                            ),
-                          ),
-                          style: const TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                          obscureText: true,
-                        ),
-                        const SizedBox(
-                          height: 30.0,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (mailcontroller.text.isNotEmpty &&
-                                passwordcontroller.text.isNotEmpty) {
-                              setState(() {
-                                email = mailcontroller.text;
-                                password = passwordcontroller.text;
-                              });
-                            }
-                            userlogin();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30.0, vertical: 20.0),
-                            backgroundColor: const Color.fromARGB(
-                                255, 184, 70, 4), // Button color
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(60), // Rounded corners
-                            ),
-                            elevation: 5.0, // Button elevation
-                          ),
-                          child: const Text(
-                            "Log in",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 25.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          hintText: "Password",
                         ),
                         const Spacer(),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 40),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "Don't have an account? ",
-                                style: TextStyle(
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                              GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const SignUp()));
-                                  },
-                                  child: const Padding(
-                                    padding: EdgeInsetsDirectional.symmetric(
-                                        horizontal: 10),
-                                    child: Text(
-                                      "Sign Up",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  )),
-                            ],
-                          ),
-                        )
+                        loginButton(),
+                        const Spacer(),
+                        dontHaveAccount(),
                       ],
                     ),
                   ),
