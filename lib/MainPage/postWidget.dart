@@ -1,125 +1,112 @@
 import 'package:flutter/material.dart';
 
 class PostWidget extends StatelessWidget {
-  const PostWidget({super.key});
+  final String imagePath;
+  final String username;
+  final String location;
+  final String description;
+  final String date;
+
+  const PostWidget({
+    super.key,
+    required this.imagePath,
+    required this.username,
+    required this.location,
+    required this.description,
+    required this.date,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 375, // Adjust according to your layout
-          height: 54, // Adjust according to your layout
-          color: Colors.white,
-          child: Center(
-            child: ListTile(
-              leading: ClipOval(
-                child: SizedBox(
-                  width: 35, // Adjust according to your layout
-                  height: 35, // Adjust according to your layout
-                  child: Icon(Icons.person), // Replace with Image.asset if needed
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 5,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            leading: CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.grey.shade300,
+              child: Icon(Icons.person, color: Colors.grey.shade700),
+            ),
+            title: Row(
+              children: [
+                Text(
+                  username,
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                 ),
+                SizedBox(width: 5),
+                Text(
+                  location,
+                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                ),
+              ],
+            ),
+            trailing: Icon(Icons.more_horiz),
+          ),
+          Container(
+            width: double.infinity,
+            height: 200,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
               ),
-              title: Text(
-                'username', 
-                style: TextStyle(fontSize: 13), // Adjust font size
-              ),
-              subtitle: Text(
-                'location', 
-                style: TextStyle(fontSize: 11), // Adjust font size
-              ),
-              trailing: Icon(Icons.more_horiz),
             ),
           ),
-        ),
-        Container(
-          width: 375,
-          height: 375,
-          child: Image.asset(
-            'images/beautiful-natural-image-1844362_1280.jpg',
-            fit: BoxFit.cover,
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  description,
+                  style: TextStyle(fontSize: 14, color: Colors.black87),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  date,
+                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                ),
+              ],
+            ),
           ),
-        ),
-        Container(
-          width: 375,
-          color: Colors.white,
-          child: Column(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              SizedBox(width: 14), // Proper usage of children
-              Row(
-                children: [
-                  SizedBox(width: 17),
-                  const Icon(
-                    Icons.favorite_outline, 
-                    size: 30,
-                  ),
-                  SizedBox(width: 17),
-                  const Icon(
-                    Icons.add_comment_outlined,
-                    size: 30,
-                  ),
-                  SizedBox(width: 17),
-                  const Icon(
-                    Icons.send_outlined,
-                    size: 30,
-                  ),
-                  const Spacer(),
-                  Padding(
-                    padding: EdgeInsets.only(right: 15),
-                    child: Icon(
-                      Icons.bookmark_outline,
-                      size: 30,
-                    ),
-                  ),
-                ],
+              IconButton(
+                icon: Icon(Icons.favorite_outline),
+                onPressed: () {},
               ),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 19,
-                  bottom: 5,
-                ),
-                child: Text(
-                  '0',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+              IconButton(
+                icon: Icon(Icons.add_comment_outlined),
+                onPressed: () {},
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  children: [
-                    Text(
-                      'username',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'kappa',
-                      style: TextStyle(
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
+              IconButton(
+                icon: Icon(Icons.send_outlined),
+                onPressed: () {},
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 15, top: 20, bottom: 8),
-                child: Text(
-                  'dateformat',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey,
-                  ),
-                ),
+              Spacer(),
+              IconButton(
+                icon: Icon(Icons.bookmark_outline),
+                onPressed: () {},
               ),
             ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
