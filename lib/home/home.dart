@@ -39,6 +39,7 @@ class _NavigationExampleState extends State<NavigationExample> {
     final ThemeData theme = Theme.of(context);
     return Scaffold(
       bottomNavigationBar: NavigationBar(
+        backgroundColor: Color.fromARGB(200, 255, 219, 164),
         onDestinationSelected: (int index) {
           setState(() {
             currentPageIndex = index;
