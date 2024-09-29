@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   // Function to delay the splash screen for 3 seconds and navigate to SignIn
   _navigateToSignIn() async {
-    await Future.delayed(Duration(seconds: 5), () {}); // Delay for 3 seconds
+    await Future.delayed(Duration(seconds: 8), () {}); // Delay for 3 seconds
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => SignIn()), // Navigate to SignIn screen
