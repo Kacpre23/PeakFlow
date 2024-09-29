@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:peakflow/personal_details/personal_details_view.dart';
 import 'package:peakflow/services/auth.dart';
 import 'package:peakflow/MainPage/mainpage.dart';
+import 'package:peakflow/findFriends/findfriends.dart';
 
 
 class Home extends StatefulWidget {
@@ -79,14 +80,7 @@ class _NavigationExampleState extends State<NavigationExample> {
         /// Home page
         MainPage(userId: userId),
         /// FindFriends page
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              Text('Find Friends page content goes here.'),
-            ],
-          ),
-        ),
+        FindFriends(userId: userId),
 
         /// Notifications page
         const Padding(
