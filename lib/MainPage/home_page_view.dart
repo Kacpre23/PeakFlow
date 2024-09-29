@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:peakflow/MainPage/postWidget.dart'; // Import Firestore
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+import 'package:peakflow/MainPage/postWidget.dart';
 
 class MainPage extends StatefulWidget {
   final String userId;
@@ -13,6 +13,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+
   @override
   void initState() {
     super.initState();
@@ -40,21 +42,84 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
 
+    // Lista obrazów, użytkowników, lokalizacji, opisów i dat
+    List<Map<String, String>> posts = [
+      {
+        'image': 'images/beautiful-natural-image-1844362_1280.jpg',
+        'username': 'John Doe',
+        'location': 'New York, USA',
+        'description': 'A beautiful sunset over the mountains.',
+        'date': '2024-08-10',
+      },
+      {
+        'image': 'images/bougainvillea-64413_1280.jpg',
+        'username': 'Emily Smith',
+        'location': 'Los Angeles, USA',
+        'description': 'Bougainvillea in full bloom.',
+        'date': '2024-08-15',
+      },
+      {
+        'image': 'images/running-942110_1280.jpg',
+        'username': 'Michael Brown',
+        'location': 'London, UK',
+        'description': 'Running in the park during sunrise.',
+        'date': '2024-08-20',
+      },
+      {
+        'image': 'images/clock-68626_1280.jpg',
+        'username': 'Sophia Johnson',
+        'location': 'Tokyo, Japan',
+        'description': 'A vintage clock in the heart of the city.',
+        'date': '2024-08-25',
+      }
+    ];
+
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Welcome back ${widget.name}!',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              )),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'Welcome back ${widget.name}!',
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        body: CustomScrollView(slivers: [
-          SliverList(
+        backgroundColor: Color.fromARGB(200, 227, 138, 37),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(240, 255, 219, 164),
+              Color.fromARGB(255, 220, 158, 88),
+              Color.fromARGB(255, 227, 138, 37),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: CustomScrollView(
+          slivers: [
+            SliverList(
               delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              return const PostWidget();
-            },
-            childCount: 10, // Define how many children
-          ))
-        ]));
+                (context, index) {
+                  var post = posts[index];
+                  return Column(
+                    children: [
+                      PostWidget(
+                        imagePath: post['image']!,
+                        username: post['username']!,
+                        location: post['location']!,
+                        description: post['description']!,
+                        date: post['date']!,
+                      ),
+                      SizedBox(height: 20), // Odstęp między postami
+                    ],
+                  );
+                },
+                childCount: posts.length, // Wyświetl 4 posty
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
