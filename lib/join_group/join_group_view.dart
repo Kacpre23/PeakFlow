@@ -52,7 +52,7 @@ class ActivityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.all(10.0),
-      color: Colors.white, // Białe tło karty
+      color: Colors.white.withOpacity(0.8), // Lekko przezroczyste tło karty
       elevation: 4, // Dodanie cienia do karty
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center, // Wyśrodkowanie
