@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:peakflow/personal_details/personal_details_view.dart';
+import 'package:peakflow/services/auth.dart';
+import 'package:peakflow/MainPage/mainpage.dart';
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -29,6 +33,9 @@ class _NavigationExampleState extends State<NavigationExample> {
 
   @override
   Widget build(BuildContext context) {
+    final AuthMethods authMethods = AuthMethods();
+    String userId = authMethods.getCurrentUserId();
+
     final ThemeData theme = Theme.of(context);
     return Scaffold(
       bottomNavigationBar: NavigationBar(
@@ -70,24 +77,13 @@ class _NavigationExampleState extends State<NavigationExample> {
       ),
       body: <Widget>[
         /// Home page
-        Card(
-          shadowColor: Colors.transparent,
-          margin: const EdgeInsets.all(8.0),
-          child: SizedBox.expand(
-            child: Center(
-              child: Text(
-                'Home page',
-                style: theme.textTheme.titleLarge,
-              ),
-            ),
-          ),
-        ),
-
-        ///FindFriend page
+        MainPage(userId: userId),
+        /// FindFriends page
         const Padding(
           padding: EdgeInsets.all(8.0),
           child: Column(
             children: <Widget>[
+              Text('Find Friends page content goes here.'),
             ],
           ),
         ),
@@ -156,19 +152,9 @@ class _NavigationExampleState extends State<NavigationExample> {
             );
           },
         ),
-        /// Home page
-        Card(
-          shadowColor: Colors.transparent,
-          margin: const EdgeInsets.all(8.0),
-          child: SizedBox.expand(
-            child: Center(
-              child: Text(
-                'Twoja Noga ssie pieroga',
-                style: theme.textTheme.titleLarge,
-              ),
-            ),
-          ),
-        ),
+
+        /// Profile page (Personal Details)
+        PersonalDetails(userId: userId),
       ][currentPageIndex],
     );
   }
