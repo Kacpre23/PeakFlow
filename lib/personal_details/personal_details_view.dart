@@ -4,6 +4,9 @@ import 'package:peakflow/services/database.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:peakflow/widgets/custom_text_field_widget.dart';
+import 'package:peakflow/widgets/image_picker_widget.dart';
+import 'package:peakflow/widgets/multi_selector_widget.dart';
 
 class PersonalDetails extends StatefulWidget {
   final String userId;
@@ -29,11 +32,47 @@ class _PersonalDetailsState extends State<PersonalDetails> {
   TextEditingController emailController = TextEditingController();
   TextEditingController locationController = TextEditingController();
   TextEditingController ageController = TextEditingController();
+  List<String> selectedInterests = [];
+
+  final List<String> _interests = [
+    "Running",
+    "Cycling",
+    "Swimming",
+    "Tennis",
+    "Gym Workouts",
+    "Yoga",
+    "Rock Climbing",
+    "Hiking",
+    "Martial Arts",
+    "Dance Classes",
+    "Pilates",
+    "Group Fitness Classes",
+    "Rowing",
+    "Skateboarding",
+    "Surfing",
+    "Triathlon Training",
+    "Mountain Biking",
+    "CrossFit",
+    "Outdoor Boot Camps",
+    "Adventure Racing"
+  ];
 
   @override
   void initState() {
     super.initState();
     _fetchUserDetails();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(widget.userId)
+        .get();
+
+    setState(() {
+      selectedInterests = List<String>.from(userDoc['interests'] ?? []);
+    });
   }
 
   Future<void> _fetchUserDetails() async {
@@ -100,6 +139,8 @@ class _PersonalDetailsState extends State<PersonalDetails> {
       "email": emailController.text,
       "location": locationController.text,
       "age": ageController.text,
+      "interests": selectedInterests,
+      "avatarUrl": avatarUrl,
     };
 
     await databaseMethods.updateUser(widget.userId, updatedInfoMap);
@@ -121,109 +162,21 @@ class _PersonalDetailsState extends State<PersonalDetails> {
           ),
           child: Column(
             children: [
-              GestureDetector(
-                onTap: pickImage,
-                child: Container(
-                  margin: const EdgeInsetsDirectional.only(top: 80, bottom: 30),
-                  width: 150.0,
-                  height: 150.0,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                  ),
-                  child: ClipOval(
-                    child: _image != null
-                        ? Image.file(
-                            _image!,
-                            fit: BoxFit.cover,
-                          )
-                        : (avatarUrl.isNotEmpty
-                            ? Image.network(
-                                avatarUrl,
-                                fit: BoxFit.cover,
-                              )
-                            : Image.asset(
-                                "images/add_avatar.png",
-                                fit: BoxFit.cover,
-                              )),
-                  ),
-                ),
+              ImagePickerWidget(),
+              CustomTextField(controller: nameController, hintText: "Name"),
+              CustomTextField(
+                  controller: surnameController, hintText: "Surname"),
+              CustomTextField(controller: emailController, hintText: "Email"),
+              CustomTextField(
+                  controller: locationController, hintText: "Location"),
+              CustomTextField(controller: ageController, hintText: "Age"),
+              MultiSelectorWidget(
+                interests: _interests,
+                selectedInterests: selectedInterests,
               ),
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  hintText: "Name",
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 1.5),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Color.fromARGB(255, 227, 138, 37), width: 1.5),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
+              SizedBox(
+                height: 40,
               ),
-              const SizedBox(height: 20.0),
-              TextField(
-                controller: surnameController,
-                decoration: const InputDecoration(
-                  hintText: "Surname",
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 1.5),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Color.fromARGB(255, 227, 138, 37), width: 1.5),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              const SizedBox(height: 20.0),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  hintText: "Email",
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 1.5),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Color.fromARGB(255, 227, 138, 37), width: 1.5),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              const SizedBox(height: 20.0),
-              TextField(
-                controller: locationController,
-                decoration: const InputDecoration(
-                  hintText: "Location",
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 1.5),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Color.fromARGB(255, 227, 138, 37), width: 1.5),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              const SizedBox(height: 20.0),
-              TextField(
-                controller: ageController,
-                decoration: const InputDecoration(
-                  hintText: "Age",
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 1.5),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Color.fromARGB(255, 227, 138, 37), width: 1.5),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              const SizedBox(height: 40.0),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
